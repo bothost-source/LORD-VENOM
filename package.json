@@ -7,6 +7,6 @@
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",
     "pino": "^8.19.0",
-    "sharp": "^0.33.0"
+    "sharp": "^0.32.0"
   }
 }
