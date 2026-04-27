@@ -1,23 +1,12 @@
-
 {
-  "name": "LORD VENOM",
-  "version": "6.0.0",
-  "description": "WhatsApp Assistant Bot",
+  "name": "lord-venom",
+  "version": "1.0.0",
+  "description": "Nexus Intelligence Interface",
   "main": "pair.js",
-  "scripts": {
-    "start": "bash start.sh",
-    "pair": "node pair.js"
-  },
+  "author": "DESTINY JOB",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",
-    "pino": "^8.0.0",
-    "sharp": "^0.32.0"
-  },
-  "keywords": [
-    "whatsapp",
-    "bot",
-    "pairing"
-  ],
-  "author": "LORD VENOM",
-  "license": "MIT"
+    "pino": "^8.19.0",
+    "sharp": "^0.33.0"
+  }
 }
