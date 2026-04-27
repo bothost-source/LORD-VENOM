@@ -6,7 +6,7 @@
   "author": "DESTINY JOB",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.6.0",
-    "pino": "^8.19.0",
+    "pino": "^8.0.0",
     "sharp": "^0.32.0"
   }
 }
