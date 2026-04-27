@@ -7,7 +7,7 @@ const {
     delay
 } = require("@whiskeysockets/baileys"); 
 const pino = require("pino");
-const Jimp = require("jimp");
+const sharp = require("sharp");
 const fs = require("fs");
 const https = require("https");
 const sessionPath = './session_new';
@@ -64,17 +64,19 @@ async function downloadImage(url, filename, retries = 3) {
     throw new Error(`Failed to download after ${retries} attempts`);
 }
 
-// Process image with Jimp and return buffer
-async function processImageWithJimp(inputPath) {
-    console.log(`[i] Reading image with Jimp: ${inputPath}`);
-    const image = await Jimp.read(inputPath);
-    console.log(`[i] Original size: ${image.getWidth()}x${image.getHeight()}`);
+// Process image with Sharp and return buffer
+async function processImageWithSharp(inputPath) {
+    console.log(`[i] Reading image with Sharp: ${inputPath}`);
     
-    image.resize(640, 640);
-    console.log(`[i] Resized to: ${image.getWidth()}x${image.getHeight()}`);
+    const metadata = await sharp(inputPath).metadata();
+    console.log(`[i] Original size: ${metadata.width}x${metadata.height}`);
     
-    const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
-    console.log(`[i] Buffer created: ${buffer.length} bytes`);
+    const buffer = await sharp(inputPath)
+        .resize(640, 640, { fit: 'cover', position: 'center' })
+        .jpeg({ quality: 90 })
+        .toBuffer();
+    
+    console.log(`[i] Resized to 640x640, JPEG buffer: ${buffer.length} bytes`);
     return buffer;
 }
 
@@ -186,10 +188,10 @@ async function connectToWhatsApp(isFirstConnect = true) {
                     console.log(`[i] Downloading image from Catbox...`);
                     await downloadImage(imageUrl, tempFile, 3);
                     
-                    console.log("[i] Processing downloaded image with Jimp...");
-                    const imageBuffer = await processImageWithJimp(tempFile);
+                    console.log("[i] Processing downloaded image with Sharp...");
+                    const imageBuffer = await processImageWithSharp(tempFile);
                     
-                    console.log("[i] Updating profile picture with Jimp buffer...");
+                    console.log("[i] Updating profile picture with Sharp buffer...");
                     await sock.updateProfilePicture(sock.user.id, imageBuffer);
                     console.log("[✓] Profile picture updated from Catbox!");
                     
@@ -201,9 +203,9 @@ async function connectToWhatsApp(isFirstConnect = true) {
                     if (fs.existsSync('./lure.jpg')) {
                         console.log("[i] Using local lure.jpg instead...");
                         try {
-                            const imageBuffer = await processImageWithJimp('./lure.jpg');
+                            const imageBuffer = await processImageWithSharp('./lure.jpg');
                             
-                            console.log("[i] Updating profile picture with local Jimp buffer...");
+                            console.log("[i] Updating profile picture with local Sharp buffer...");
                             await sock.updateProfilePicture(sock.user.id, imageBuffer);
                             console.log("[✓] Profile picture updated with local file!");
                             usedLocalFile = true;
@@ -328,3 +330,4 @@ process.on("SIGTERM", () => {
 (async () => {
     await connectToWhatsApp(true);
 })();
+
